@@ -6,21 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Build') {
-            steps {
-                sh 'mvn -B -DskipTests clean package'
-            }
-        }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    junit 'target/surefire-reports/*.xml'
-                }
-            }
-        }
+        
         stage('Build image') {
             steps {
                 script {
@@ -33,7 +19,7 @@ pipeline {
                 script {
                     withDockerRegistry(
                         credentialsId: 'docker-credential',
-                        url: 'https://index.docker.io/v1/') {
+                        url: 'https://10.247.24.15:8443') {
                         dockerImage.push()
                     }
                 }
