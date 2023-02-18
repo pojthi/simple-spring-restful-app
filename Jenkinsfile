@@ -9,9 +9,7 @@ pipeline {
         
         stage('Build image') {
             steps {
-                script {
-                    dockerImage = docker.build("phayao/my-app")
-                }
+                sh 'docker build -t pojthi/simple-spring-restful-app:latest .'
             }
         }
         stage('Push image') {
