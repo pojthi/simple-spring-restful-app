@@ -1,28 +1,20 @@
 pipeline {
     agent any
 
-    environment {
-        dockerImage = ''
-    }
-
+   
     stages {
         
         stage('Build image') {
             steps {
-                sh 'docker build -t pojthi/simple-spring-restful-app:latest .'
+                sh 'docker build -t simple-spring-restful-app .'
             }
         }
-        stage('Push image') {
-            steps {
-                script {
-                    withDockerRegistry(
-                        credentialsId: 'docker-credential',
-                        url: 'https://10.247.24.15:8443') {
-                        dockerImage.push()
-                    }
-                }
-            }
-        }
+        stage('Push Docker Images to Nexus Registry'){
+			sh 'docker login -u npaonline01 -p npaonline01only 10.247.24.15:8443'	
+			sh 'docker push 10.247.24.15:8443/simple-spring-restful-app}'
+			sh 'docker rmi $(docker images --filter=reference="10.247.24.15:8443/simple-spring-restful-app*" -q)'
+			sh 'docker logout 10.247.24.15:8443'
+		}
         stage('Deployment') {
             steps {
                 sh 'kubectl apply -f deployment.yml';
